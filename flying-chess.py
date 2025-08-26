@@ -310,6 +310,7 @@ plot_placeholder = st.empty()  # 這裡不會渲染任何內容，但保留一�
 
 
 # Streamlit 入口，程式每次啟動或重新整理時執行
+if "all_grids" not in st.session_state:
 st.session_state.all_grids = []  # 或者清空舊資料
 
 # 生成普通格
