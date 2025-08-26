@@ -311,23 +311,23 @@ plot_placeholder = st.empty()  # 這裡不會渲染任何內容，但保留一�
 
 # Streamlit 入口，程式每次啟動或重新整理時執行
 if "all_grids" not in st.session_state:
-st.session_state.all_grids = []  # 或者清空舊資料
+    st.session_state.all_grids = []  # 或者清空舊資料
 
-# 生成普通格
-st.session_state.all_grids += line1_grids
-st.session_state.all_grids += line2_grids
-st.session_state.all_grids += line3_grids
-st.session_state.all_grids += line4_grids
-st.session_state.all_grids += line5_grids
+    # 生成普通格
+    st.session_state.all_grids += line1_grids
+    st.session_state.all_grids += line2_grids
+    st.session_state.all_grids += line3_grids
+    st.session_state.all_grids += line4_grids
+    st.session_state.all_grids += line5_grids
 
-# 生成終點格
-st.session_state.all_grids += all_goal_grids
+    # 生成終點格
+    st.session_state.all_grids += all_goal_grids
 
-# 生成繞道格
-st.session_state.all_grids += generate_detour_grids(detour_segments)
+    # 生成繞道格
+    st.session_state.all_grids += generate_detour_grids(detour_segments)
 
-# 生成飛行格
-st.session_state.all_grids.append(generate_flight_grid(colors))
+    # 生成飛行格
+    st.session_state.all_grids.append(generate_flight_grid(colors))
 
 # 在streamlit上呈現
 
