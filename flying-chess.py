@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
-
 # **第一行 Streamlit 指令**
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
@@ -273,7 +272,7 @@ detour_grids = generate_detour_grids(detour_segments)
 
 # 飛行格
 def generate_flight_grid(colors_flight):
-    flight_grid = {
+    flight_grids = {
         "x": 0,
         "y": 10,
         "type": "flight",         # 飛行格類型
@@ -289,7 +288,12 @@ def generate_flight_grid(colors_flight):
             colors_flight[4]: [13, 20]
         }
     }
-    return flight_grid
+    return flight_grids
+
+
+flight_grid = generate_flight_grid(colors)
+
+all_grids += all_goal_grids + detour_grids + [flight_grid]
 
 
 # 飛行線
