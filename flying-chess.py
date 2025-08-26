@@ -323,6 +323,7 @@ plot_placeholder = st.empty()
 
 scale = 0.2
 fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
+fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
 ax.set_xlim(-7, 7)
 ax.set_ylim(-6, 11.5)
 ax.set_aspect("equal", adjustable="box")
