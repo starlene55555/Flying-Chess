@@ -17,23 +17,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-# 接下來再做其他 Streamlit 操作
-plot_placeholder = st.empty()
 
-scale = 0.2
-fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
-ax.set_xlim(-7, 7)
-ax.set_ylim(-6, 11.5)
-ax.set_aspect("equal", adjustable="box")
-ax.axis('off')  # 隱藏座標軸
-
-for g in st.session_state.all_grids:
-    rect = plt.Rectangle((g["x"]-0.25, g["y"]-0.25), 0.5, 0.5,
-                         facecolor=g["color"], edgecolor="black", linewidth=0.25)
-    ax.add_patch(rect)
-
-# 把圖表渲染到最上方占位
-plot_placeholder.pyplot(fig, dpi=100)
 
 
 # 定義多條線段，每條線段給一個公式和格子數
@@ -334,7 +318,23 @@ if "all_grids" not in st.session_state:
     st.session_state.all_grids.append(generate_flight_grid(colors))
 
 # 在streamlit上呈現
+# 接下來再做其他 Streamlit 操作
+plot_placeholder = st.empty()
 
+scale = 0.2
+fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
+ax.set_xlim(-7, 7)
+ax.set_ylim(-6, 11.5)
+ax.set_aspect("equal", adjustable="box")
+ax.axis('off')  # 隱藏座標軸
+
+for g in st.session_state.all_grids:
+    rect = plt.Rectangle((g["x"]-0.25, g["y"]-0.25), 0.5, 0.5,
+                         facecolor=g["color"], edgecolor="black", linewidth=0.25)
+    ax.add_patch(rect)
+
+# 把圖表渲染到最上方占位
+plot_placeholder.pyplot(fig, dpi=100)
 
 
 
