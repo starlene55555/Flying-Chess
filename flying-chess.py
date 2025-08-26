@@ -334,7 +334,7 @@ for g in st.session_state.all_grids:
     ax.add_patch(rect)
 
 # 把圖表渲染到最上方占位
-plot_placeholder.pyplot(fig, dpi=500)
+plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 
 
 
