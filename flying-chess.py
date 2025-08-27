@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+import random
 
 # **第一行 Streamlit 指令**
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
@@ -277,16 +278,17 @@ def generate_flight_grid(colors_flight):
 flight_grid = generate_flight_grid(colors)
 
 # 定義五個起跑道格子
-start_runway_grids = [
-    {"x": 6.5, "y": 4.5, "color": colors[0]},     # 玩家1
-    {"x": 6.5, "y": -5.5, "color": colors[1]},    # 玩家2
-    {"x": -6, "y": -6, "color": colors[2]},    # 玩家3
-    {"x": -6.5, "y": 3, "color": colors[3]},   # 玩家4
-    {"x": -0.8, "y": 9.8, "color": colors[4]},   # 玩家5
+RUNWAY_POSITIONS = {
+    colors[0]: {"x": 6.5, "y": 4.5},   # 玩家1
+    colors[1]: {"x": 6.5, "y": -5.5},  # 玩家2
+    colors[2]: {"x": -6,  "y": -6},    # 玩家3
+    colors[3]: {"x": -6.5, "y": 3},    # 玩家4
+    colors[4]: {"x": -0.8, "y": 9.8},  # 玩家5
+}
+
+all_grids += all_goal_grids + detour_grids + [flight_grid] + [
+    {"x": v["x"], "y": v["y"], "color": c} for c, v in RUNWAY_POSITIONS.items()
 ]
-
-
-all_grids += all_goal_grids + detour_grids + [flight_grid] + start_runway_grids
 
 
 # 飛行線
@@ -334,8 +336,21 @@ if "all_grids" not in st.session_state:
     st.session_state.all_grids.append(generate_flight_grid(colors))
 
     # 生成起點格
-    st.session_state.all_grids += start_runway_grids
+    st.session_state.all_grids += RUNWAY_POSITIONS
 
+# 初始化玩家狀態
+if "players" not in st.session_state:
+    st.session_state.players = {}
+    for color in colors:  # colors = ["red", "blue", "green", "yellow", "purple"] 假設這樣定義
+        st.session_state.players[color] = {
+            "airport": [f"{color}_1", f"{color}_2", f"{color}_3"],  # 機場裡三顆棋子
+            "runway": [],  # 出來後才會加進去
+            "position": None  # 之後棋盤座標用
+        }
+if "turn" not in st.session_state:
+    st.session_state.turn = "red"
+if "dice" not in st.session_state:
+    st.session_state.dice = None
 
 # 在streamlit上呈現
 plot_placeholder = st.empty()
@@ -375,6 +390,50 @@ for color in colors:
 row_html += '</div>'
 
 st.markdown(row_html, unsafe_allow_html=True)
+
+st.write(f"🎮 輪到 {st.session_state.turn} 玩家")
+
+# 擲骰
+if st.button("擲骰"):
+    d1, d2 = random.randint(1, 6), random.randint(1, 6)
+    st.session_state.dice = (d1, d2)
+    st.write(f"🎲 骰子結果：{d1}, {d2}")
+
+player = st.session_state.turn
+airport = st.session_state.players[player]["airport"]
+
+if st.session_state.dice:
+    d1, d2 = st.session_state.dice
+    # 顯示機場棋子
+    st.write("✈️ 機場棋子：")
+    cols = st.columns(len(airport) if airport else 1)
+    for i, pid in enumerate(airport):
+        if st.button("●", key=f"{player}_{pid}",
+                     disabled=(d1 != d2), help=f"{player} 的棋子"):
+            st.session_state.players[player]["airport"].remove(pid)
+            st.session_state.players[player]["runway"].append(pid)
+            st.success(f"{player} 的 {pid} 已經出跑道！")
+
+# === 繪製棋盤與跑道棋子 ===
+fig, ax = plt.subplots(figsize=(5, 5))
+ax.set_xlim(-7, 7)
+ax.set_ylim(-7, 7)
+ax.set_aspect("equal", adjustable="box")
+ax.axis("off")
+
+for color, info in st.session_state.players.items():
+    if info["runway"]:  # 該顏色有棋子在跑道
+        pos = RUNWAY_POSITIONS[color]
+        # 畫出棋子
+        ax.text(pos["x"], pos["y"], "●", fontsize=20, color=color, ha="center", va="center")
+
+        # 如果棋子數量 > 1，加上數字標籤
+        if len(info["runway"]) > 1:
+            ax.text(pos["x"]+0.25, pos["y"]-0.25, f"{len(info['runway'])}",
+                    fontsize=12, color="black", ha="center", va="center",
+                    bbox=dict(boxstyle="circle,pad=0.2", fc="white", ec="black", lw=0.5))
+
+st.pyplot(fig)
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
