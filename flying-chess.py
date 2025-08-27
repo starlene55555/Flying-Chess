@@ -360,22 +360,12 @@ plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 
 # 假設五個顏色，每個顏色 3 顆棋子
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
-pieces_per_color = 3
+for color in colors:
+    cols = st.columns(3)  # 每排3個棋子
+    for i, col in enumerate(cols):
+        col.button("●", key=f"{color}_{i}", disabled=True,
+                   style=f"font-size:24px;color:{color};border:none;background:none")
 
-with airport_placeholder:
-    html_chunks = []
-    for color in colors:
-        # 生成每色棋子的 HTML
-        color_html = ""
-        for i in range(pieces_per_color):
-            color_html += f"<span style='font-size:32px; color:{color}; margin-right:8px;'>●</span>"
-        # 用 <div> 包住每色棋子，遇到寬度不足會自動換行
-        html_chunks.append(f"<div style='display:inline-block; margin-bottom:8px;'>{color_html}</div>")
-
-    # 最後整合所有 HTML
-    full_html = "<div style='text-align:left;'>" + "".join(html_chunks) + "</div>"
-    st.markdown(full_html, unsafe_allow_html=True)
-    
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
 # streamlit run Flying-Chess.py
