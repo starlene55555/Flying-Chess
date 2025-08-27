@@ -344,7 +344,7 @@ scale = 0.15
 fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
 fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
 ax.set_xlim(-7, 7)
-ax.set_ylim(-6, 11.5)
+ax.set_ylim(-7, 11.5)
 ax.set_aspect("equal", adjustable="box")
 ax.axis('off')  # 隱藏座標軸
 
@@ -359,34 +359,21 @@ plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 
 # 假設五個顏色，每個顏色 3 顆棋子
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
-num_per_color = 3
+pieces_per_color = 3
 
 
-# 建立棋子列表，每個元素包含顏色
-pieces = []
-for c in colors:
-    for _ in range(num_per_color):
-        pieces.append(c)
+row_html = '<div style="display:flex; flex-wrap:wrap; justify-content:center;">'
 
-# 分行，依顏色換行
-max_per_row = num_per_color
-rows = []
-current_row = []
-current_color = pieces[0]
-for p in pieces:
-    if len(current_row) >= max_per_row or p != current_color:
-        rows.append(current_row)
-        current_row = []
-        current_color = p
-    current_row.append(p)
-if current_row:
-    rows.append(current_row)
+for color in colors:
+    row_html += f'<div style="display:flex; flex-wrap:wrap; margin:5px;">'
+    for _ in range(pieces_per_color):
+        row_html += (f'<div style="margin:2px; min-width:20px; min-height:20px; font-size:24px; color:{color}; text'
+                     f'-align:center;">●</div>')
+    row_html += '</div>'
 
-# 呈現棋子，用 Markdown 顯示彩色圓圈
-for row in rows:
-    cols = st.columns(len(row), gap="small")
-    for col, color in zip(cols, row):
-        col.markdown(f'<div style="font-size:24px; color:{color}; text-align:center;">●</div>', unsafe_allow_html=True)
+row_html += '</div>'
+
+st.markdown(row_html, unsafe_allow_html=True)
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
