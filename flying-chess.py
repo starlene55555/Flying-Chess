@@ -19,7 +19,6 @@ st.markdown(
 )
 
 
-
 # 定義多條線段，每條線段給一個公式和格子數
 
 
@@ -131,8 +130,8 @@ def assign_colors(grids_nor_colours, palette, start_index=0):
 
 # ===== 排顏色 =====
 all_grids = []
-line1_grids = generate_normal_grids(line1, 11)
-assign_colors(line1_grids, colors, start_index=4)
+line1_grids = generate_normal_grids(line1, 11, skip_first=True)
+assign_colors(line1_grids, colors, start_index=0)
 
 line2_grids = generate_normal_grids(line2, 11, skip_first=True)
 assign_colors(line2_grids, colors, start_index=1)
@@ -240,8 +239,8 @@ def generate_detour_grids(detour_seg):
             grids = grids[:-1]
 
         # 填入手動顏色並設定疊加屬性
-        for j, (go, c) in enumerate(zip(grids, manual_colors), start=1):
-            go["color"] = c
+        for j, (go, co) in enumerate(zip(grids, manual_colors), start=1):
+            go["color"] = co
             go["type"] = "detour"
             go["id"] = f"detour{idxxx}_{j}"
             go["stackable"] = True          # 允許疊加
@@ -277,20 +276,37 @@ def generate_flight_grid(colors_flight):
 
 flight_grid = generate_flight_grid(colors)
 
-all_grids += all_goal_grids + detour_grids + [flight_grid]
+# 定義五個起跑道格子
+start_runway_grids = [
+    {"x": 6.5, "y": 4.5, "color": colors[0]},     # 玩家1
+    {"x": 6.5, "y": -5.5, "color": colors[1]},    # 玩家2
+    {"x": -6, "y": -6, "color": colors[2]},    # 玩家3
+    {"x": -6.5, "y": 3, "color": colors[3]},   # 玩家4
+    {"x": -0.8, "y": 9.8, "color": colors[4]},   # 玩家5
+]
+
+
+all_grids += all_goal_grids + detour_grids + [flight_grid] + start_runway_grids
 
 
 # 飛行線
-def flight_route_a(t):
+def flight_route_a(t):  # 右邊
     x = (1-t)**3*0 + 3*(1-t)**2*t*1.75 + 3*(1-t)*t**2*2.75 + t**3*3.5
     y = (1-t)**3*9.35 + 3*(1-t)**2*t*4.0125 + 3*(1-t)*t**2*0.2 + t**3*-5
     return x, y
 
 
-def flight_route_b(t):
-    x = (1-t)**3*0 + 3*(1-t)**2*t*(-1.94444) + 3*(1-t)*t**2*(-2.75) + t**3*-3.5
-    y = (1-t)**3*9.35 + 3*(1-t)**2*t*4.2167 + 3*(1-t)*t**2*1.40341 + t**3*-5
+def flight_route_b(t):  # 左邊
+
+    x = (1 - t) ** 3 * 0 + 3 * (1 - t) ** 2 * t * (-1.94444) + 3 * (1 - t) * t ** 2 * (-2.75) + t ** 3 * -3.5
+    y = (1 - t) ** 3 * 9.35 + 3 * (1 - t) ** 2 * t * 4.2167 + 3 * (1 - t) * t ** 2 * 1.40341 + t ** 3 * -5
     return x, y
+
+
+flight_path_intersections = {
+    flight_route_a: ["#69CAFF_3", "#E87361_3"],  # 航線 A 會飛過的終點格
+    flight_route_b: ["#FF96CC_4", "#FF96CC_5", "#A0FF89_3"]   # 航線 B 會飛過的終點格
+}
 
 
 # 在頁面最上方占位
@@ -317,11 +333,14 @@ if "all_grids" not in st.session_state:
     # 生成飛行格
     st.session_state.all_grids.append(generate_flight_grid(colors))
 
+    # 生成起點格
+    st.session_state.all_grids += start_runway_grids
+
+
 # 在streamlit上呈現
-# 接下來再做其他 Streamlit 操作
 plot_placeholder = st.empty()
 
-scale = 0.1
+scale = 0.15
 fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
 fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
 ax.set_xlim(-7, 7)
@@ -338,7 +357,41 @@ for g in st.session_state.all_grids:
 plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 
 
+# 假設五個顏色，每個顏色 3 顆棋子
+colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
+num_per_color = 3
 
+# 計算每行棋子數量，根據螢幕寬度 (假設最大可放 15 個)
+# 這裡我們用一個簡單策略：每行最多放 num_per_color 棋子
+# Streamlit 目前無法直接抓瀏覽器寬度，但可以預設一個合理最大值
+max_per_row = num_per_color
+
+# 建立棋子列表，每個元素包含顏色
+pieces = []
+for c in colors:
+    for _ in range(num_per_color):
+        pieces.append(c)
+
+# 將棋子分行，每行最多 max_per_row 顆，顏色分隔
+rows = []
+current_row = []
+current_color = pieces[0]
+for p in pieces:
+    if len(current_row) >= max_per_row or p != current_color:
+        rows.append(current_row)
+        current_row = []
+        current_color = p
+    current_row.append(p)
+if current_row:
+    rows.append(current_row)
+
+# 在 Streamlit 上呈現
+for row in rows:
+    cols = st.columns(len(row), gap="small")
+    for col, color in zip(cols, row):
+        col.button("●", key=f"{color}_{row.index(color)}", disabled=True,
+                   help=f"{color}棋子",
+                   style=f"font-size:24px;color:{color};border:none;background:none")
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
