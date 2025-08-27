@@ -339,6 +339,7 @@ if "all_grids" not in st.session_state:
 
 # 在streamlit上呈現
 plot_placeholder = st.empty()
+airport_placeholder = st.empty()
 
 scale = 0.15
 fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
