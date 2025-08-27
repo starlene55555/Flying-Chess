@@ -362,12 +362,12 @@ colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
 pieces_per_color = 3
 
 
-row_html = '<div style="display:flex; flex-wrap:wrap; justify-content:center;">'
+row_html = '<div style="display:flex; flex-wrap:wrap; justify-content:flex-start;">'
 
 for color in colors:
     row_html += f'<div style="display:flex; flex-wrap:wrap; margin:5px;">'
     for _ in range(pieces_per_color):
-        row_html += (f'<div style="margin:2px; min-width:20px; min-height:20px; font-size:24px; color:{color}; text'
+        row_html += (f'<div style="margin:2px; min-width:20px; min-height:20px; font-size:32px; color:{color}; text'
                      f'-align:center;">●</div>')
     row_html += '</div>'
 
