@@ -287,7 +287,7 @@ RUNWAY_POSITIONS = {
 }
 
 all_grids += all_goal_grids + detour_grids + [flight_grid] + [
-    {"x": v["x"], "y": v["y"], "color": c} for c, v in RUNWAY_POSITIONS.items()
+    {"x": v["x"], "y": v["y"], "color": k} for k, v in RUNWAY_POSITIONS.items()
 ]
 
 
