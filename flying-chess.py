@@ -341,31 +341,22 @@ if "all_grids" not in st.session_state:
 plot_placeholder = st.empty()
 airport_placeholder = st.empty()
 
-# 設定原始棋盤尺寸（inch）
-orig_width, orig_height = 12, 8
-
-# 假設可用高度 (像素)
-available_height_px = 400
-
-# 將像素轉換成英吋 (假設 dpi=100)
-dpi = 100
-scale = available_height_px / (orig_height * dpi)  # 英吋比例
-
-fig, ax = plt.subplots(figsize=(orig_width*scale, orig_height*scale), dpi=dpi)
-fig.subplots_adjust(top=0.95, bottom=0.05)
-
+scale = 0.15
+fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
+fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
 ax.set_xlim(-7, 7)
 ax.set_ylim(-7, 11.5)
 ax.set_aspect("equal", adjustable="box")
-ax.axis('off')
+ax.axis('off')  # 隱藏座標軸
 
 for g in st.session_state.all_grids:
     rect = plt.Rectangle((g["x"]-0.25, g["y"]-0.25), 0.5, 0.5,
                          facecolor=g["color"], edgecolor="black", linewidth=0.25)
     ax.add_patch(rect)
 
-# 新寫法避免 use_container_width 被棄用
-plot_placeholder.pyplot(fig, dpi=dpi, width='content')
+# 把圖表渲染到最上方占位
+plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
+
 
 # 假設五個顏色，每個顏色 3 顆棋子
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
@@ -384,7 +375,7 @@ with airport_placeholder:
     # 最後整合所有 HTML
     full_html = "<div style='text-align:left;'>" + "".join(html_chunks) + "</div>"
     st.markdown(full_html, unsafe_allow_html=True)
-
+    
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
 # streamlit run Flying-Chess.py
