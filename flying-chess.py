@@ -287,7 +287,7 @@ RUNWAY_POSITIONS = {
 }
 
 all_grids += all_goal_grids + detour_grids + [flight_grid] + [
-    {"x": v["x"], "y": v["y"], "color": k} for k, v in RUNWAY_POSITIONS.items()
+    {"x": v["x"], "y": v["y"], "color": c} for c, v in RUNWAY_POSITIONS.items()
 ]
 
 
@@ -336,7 +336,10 @@ if "all_grids" not in st.session_state:
     st.session_state.all_grids.append(generate_flight_grid(colors))
 
     # 生成起點格
-    st.session_state.all_grids += RUNWAY_POSITIONS
+    st.session_state.all_grids += [
+        {"x": v["x"], "y": v["y"], "color": c}
+        for c, v in RUNWAY_POSITIONS.items()
+    ]
 
 # 初始化玩家狀態
 if "players" not in st.session_state:
@@ -434,6 +437,9 @@ for color, info in st.session_state.players.items():
                     bbox=dict(boxstyle="circle,pad=0.2", fc="white", ec="black", lw=0.5))
 
 st.pyplot(fig)
+
+for i, g in enumerate(st.session_state.all_grids):
+    print(i, type(g), g)
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
