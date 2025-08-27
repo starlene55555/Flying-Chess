@@ -341,29 +341,31 @@ if "all_grids" not in st.session_state:
 plot_placeholder = st.empty()
 airport_placeholder = st.empty()
 
-# 設定原始棋盤尺寸
-orig_width, orig_height = 12, 8  # 這裡對應原本 figsize
+# 設定原始棋盤尺寸（inch）
+orig_width, orig_height = 12, 8
 
-# 假設可用高度 = 螢幕高度 - 機場高度
-available_height = 100  # 可以自行調整或用自定義參數
-scale = available_height / orig_height  # 根據可用高度自動縮放
+# 假設可用高度 (像素)
+available_height_px = 400
 
-fig, ax = plt.subplots(figsize=(orig_width*scale, orig_height*scale))
-fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
+# 將像素轉換成英吋 (假設 dpi=100)
+dpi = 100
+scale = available_height_px / (orig_height * dpi)  # 英吋比例
+
+fig, ax = plt.subplots(figsize=(orig_width*scale, orig_height*scale), dpi=dpi)
+fig.subplots_adjust(top=0.95, bottom=0.05)
 
 ax.set_xlim(-7, 7)
 ax.set_ylim(-7, 11.5)
 ax.set_aspect("equal", adjustable="box")
-ax.axis('off')  # 隱藏座標軸
+ax.axis('off')
 
 for g in st.session_state.all_grids:
     rect = plt.Rectangle((g["x"]-0.25, g["y"]-0.25), 0.5, 0.5,
                          facecolor=g["color"], edgecolor="black", linewidth=0.25)
     ax.add_patch(rect)
 
-# 把圖表渲染到最上方占位
-plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
-
+# 新寫法避免 use_container_width 被棄用
+plot_placeholder.pyplot(fig, dpi=dpi, width='content')
 
 # 假設五個顏色，每個顏色 3 顆棋子
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
