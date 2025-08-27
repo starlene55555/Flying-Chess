@@ -361,10 +361,6 @@ plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
 num_per_color = 3
 
-# 計算每行棋子數量，根據螢幕寬度 (假設最大可放 15 個)
-# 這裡我們用一個簡單策略：每行最多放 num_per_color 棋子
-# Streamlit 目前無法直接抓瀏覽器寬度，但可以預設一個合理最大值
-max_per_row = num_per_color
 
 # 建立棋子列表，每個元素包含顏色
 pieces = []
@@ -372,7 +368,8 @@ for c in colors:
     for _ in range(num_per_color):
         pieces.append(c)
 
-# 將棋子分行，每行最多 max_per_row 顆，顏色分隔
+# 分行，依顏色換行
+max_per_row = num_per_color
 rows = []
 current_row = []
 current_color = pieces[0]
@@ -385,13 +382,11 @@ for p in pieces:
 if current_row:
     rows.append(current_row)
 
-# 在 Streamlit 上呈現
+# 呈現棋子，用 Markdown 顯示彩色圓圈
 for row in rows:
     cols = st.columns(len(row), gap="small")
     for col, color in zip(cols, row):
-        col.button("●", key=f"{color}_{row.index(color)}", disabled=True,
-                   help=f"{color}棋子",
-                   style=f"font-size:24px;color:{color};border:none;background:none")
+        col.markdown(f'<div style="font-size:24px; color:{color}; text-align:center;">●</div>', unsafe_allow_html=True)
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
