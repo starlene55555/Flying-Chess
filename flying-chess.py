@@ -341,9 +341,16 @@ if "all_grids" not in st.session_state:
 plot_placeholder = st.empty()
 airport_placeholder = st.empty()
 
-scale = 0.15
-fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
+# 設定原始棋盤尺寸
+orig_width, orig_height = 12, 8  # 這裡對應原本 figsize
+
+# 假設可用高度 = 螢幕高度 - 機場高度
+available_height = 400  # 可以自行調整或用自定義參數
+scale = available_height / orig_height  # 根據可用高度自動縮放
+
+fig, ax = plt.subplots(figsize=(orig_width*scale, orig_height*scale))
 fig.subplots_adjust(top=0.95, bottom=0.05)  # top 越大，圖越往上
+
 ax.set_xlim(-7, 7)
 ax.set_ylim(-7, 11.5)
 ax.set_aspect("equal", adjustable="box")
@@ -375,7 +382,7 @@ with airport_placeholder:
     # 最後整合所有 HTML
     full_html = "<div style='text-align:left;'>" + "".join(html_chunks) + "</div>"
     st.markdown(full_html, unsafe_allow_html=True)
-    
+
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
 # streamlit run Flying-Chess.py
