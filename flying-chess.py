@@ -345,7 +345,7 @@ airport_placeholder = st.empty()
 orig_width, orig_height = 12, 8  # 這裡對應原本 figsize
 
 # 假設可用高度 = 螢幕高度 - 機場高度
-available_height = 400  # 可以自行調整或用自定義參數
+available_height = 100  # 可以自行調整或用自定義參數
 scale = available_height / orig_height  # 根據可用高度自動縮放
 
 fig, ax = plt.subplots(figsize=(orig_width*scale, orig_height*scale))
