@@ -355,6 +355,9 @@ if "turn" not in st.session_state:
 if "dice" not in st.session_state:
     st.session_state.dice = None
 
+for i, g in enumerate(st.session_state.all_grids):
+    print(i, type(g), g)
+
 # 在streamlit上呈現
 plot_placeholder = st.empty()
 airport_placeholder = st.empty()
