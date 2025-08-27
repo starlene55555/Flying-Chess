@@ -339,6 +339,7 @@ if "all_grids" not in st.session_state:
 
 # 在streamlit上呈現
 plot_placeholder = st.empty()
+airport_placeholder = st.empty()
 
 scale = 0.15
 fig, ax = plt.subplots(figsize=(12*scale, 8*scale))
@@ -359,21 +360,11 @@ plot_placeholder.pyplot(fig, dpi=500, use_container_width=False)
 
 # 假設五個顏色，每個顏色 3 顆棋子
 colors = [colors[0], colors[1], colors[2], colors[3], colors[4]]
-pieces_per_color = 3
-
-
-row_html = '<div style="display:flex; flex-wrap:wrap; justify-content:flex-start;">'
-
 for color in colors:
-    row_html += f'<div style="display:flex; flex-wrap:wrap; margin:5px;">'
-    for _ in range(pieces_per_color):
-        row_html += (f'<div style="margin:2px; min-width:20px; min-height:20px; font-size:32px; color:{color}; text'
-                     f'-align:center;">●</div>')
-    row_html += '</div>'
-
-row_html += '</div>'
-
-st.markdown(row_html, unsafe_allow_html=True)
+    cols = st.columns(3)  # 每排3個棋子
+    for i, col in enumerate(cols):
+        col.button("●", key=f"{color}_{i}", disabled=True,
+                   style=f"font-size:24px;color:{color};border:none;background:none")
 
 # /Users/crystaltang/Documents/_Beloved/MAYDAY/MAYDAY-GAME/FLYING-CHESS
 # python3 Flying-Chess.py
